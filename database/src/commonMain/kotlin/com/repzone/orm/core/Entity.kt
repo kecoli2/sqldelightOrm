@@ -26,25 +26,34 @@ fun desc(col: String) = OrderBy(col, false)
 
 // ===== Runtime Registry (generated dosya doldurur) =====
 object OrmRegistry {
+    internal val _tableNames: MutableMap<KClass<*>, String> = mutableMapOf()
+    internal val _columns   : MutableMap<KClass<*>, List<String>> = mutableMapOf()
+    internal val _mappers   : MutableMap<KClass<*>, (SqlCursor) -> Any> = mutableMapOf()
 
-    init {
-        com.repzone.orm.generated.OrmRegistry_Generated.touch()
+    fun tableNameOf(klass: KClass<*>): String {
+        ensureBootstrapped()
+        return _tableNames[klass] ?: error("No table registered for ${klass.simpleName}")
     }
 
-    internal val _tableNames = mutableMapOf<KClass<*>, String>()
-    internal val _columns    = mutableMapOf<KClass<*>, List<String>>()
-    internal val _mappers    = mutableMapOf<KClass<*>, (SqlCursor) -> Any>()
-
-    fun <T: Any> tableNameOf(klass: KClass<T>): String =
-        _tableNames[klass] ?: error("No table registered for ${klass.simpleName}")
-
-    fun <T: Any> columnsOf(klass: KClass<T>): List<String> =
-        _columns[klass] ?: emptyList()
+    fun columnsOf(klass: KClass<*>): List<String> {
+        ensureBootstrapped()
+        return _columns[klass] ?: emptyList()
+    }
 
     @Suppress("UNCHECKED_CAST")
-    fun <T: Any> mapperOf(klass: KClass<T>): (SqlCursor) -> T =
-        (_mappers[klass] as? (SqlCursor) -> T)
+    fun <T: Any> mapperOf(klass: KClass<T>): (SqlCursor) -> T {
+        ensureBootstrapped()
+        return (_mappers[klass] as? (SqlCursor) -> T)
             ?: error("No mapper registered for ${klass.simpleName}")
+    }
+
+    private var bootstrapped = false
+    fun ensureBootstrapped() {
+        if (!bootstrapped) {
+            com.repzone.orm.generated.OrmRegistry_Generated.touch()
+            bootstrapped = true
+        }
+    }
 }
 
 // ===== Core =====
@@ -57,6 +66,7 @@ object Entity {
         limit: Long? = null,
         offset: Long? = null
     ): List<T> {
+        OrmRegistry.ensureBootstrapped()
         val table = OrmRegistry.tableNameOf(T::class)
         val cols = OrmRegistry.columnsOf(T::class)
         val colSet = cols.map { it.lowercase() }.toSet()

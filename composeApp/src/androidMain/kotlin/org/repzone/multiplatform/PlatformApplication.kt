@@ -42,6 +42,7 @@ class PlatformApplication: Application() {
         val lst = Entity.select<Users>(driver)
 
         db.userQueries.transaction {
+            //db.userQueries.insertOrReplace(Users(1,"dsdada",null,null,null,null,null))
             val lst = db.userQueries.selectById(1).executeAsOneOrNull()
 
 

@@ -1,0 +1,18 @@
+CREATE TABLE users(
+  id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+  userName TEXT NOT NULL,
+  age INTEGER,
+  birthDay INTEGER,
+  draft_year INTEGER,
+  draft_year2 INTEGER,
+  draft_year3 INTEGER
+);
+
+selectById:
+SELECT * FROM users WHERE id = ?;
+
+selectPending:
+SELECT * FROM users WHERE userName = ?;
+
+insertOrReplace:
+INSERT OR REPLACE INTO users VALUES ?;

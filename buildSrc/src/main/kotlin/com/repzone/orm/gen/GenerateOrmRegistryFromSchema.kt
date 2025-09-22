@@ -67,7 +67,7 @@ abstract class GenerateOrmRegistryFromSchema : DefaultTask() {
             sb.appendLine("package $packageName")
             sb.appendLine()
             sb.appendLine("import app.cash.sqldelight.db.SqlCursor")
-            sb.appendLine("import com.repzone.orm.runtime.OrmRegistry")
+            sb.appendLine("com.repzone.orm.core.OrmRegistry")
             sb.appendLine("import kotlin.reflect.KClass")
             sb.appendLine()
             // imports for row types (we import simple per table)
@@ -116,6 +116,8 @@ abstract class GenerateOrmRegistryFromSchema : DefaultTask() {
             }
 
             sb.appendLine("  }") // init
+            sb.appendLine()
+            sb.appendLine("  fun touch() = Unit")
             sb.appendLine()
             sb.appendLine(
                 """

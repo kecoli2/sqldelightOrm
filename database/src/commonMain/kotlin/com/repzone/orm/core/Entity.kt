@@ -26,8 +26,11 @@ fun desc(col: String) = OrderBy(col, false)
 
 // ===== Runtime Registry (generated dosya doldurur) =====
 object OrmRegistry {
-    @Suppress("unused")
-    private val _forceInit = com.repzone.orm.generated.OrmRegistry_Generated
+
+    init {
+        com.repzone.orm.generated.OrmRegistry_Generated.touch()
+    }
+
     internal val _tableNames = mutableMapOf<KClass<*>, String>()
     internal val _columns    = mutableMapOf<KClass<*>, List<String>>()
     internal val _mappers    = mutableMapOf<KClass<*>, (SqlCursor) -> Any>()

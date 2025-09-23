@@ -4,10 +4,9 @@ import android.app.Application
 import app.cash.sqldelight.db.SqlDriver
 import com.repzone.database.AppDatabase
 import com.repzone.database.Users
-import com.repzone.database.orm.generated.OrmRegistryImpl
 import com.repzone.di.DatabaseAndroidModule
 import com.repzone.di.DatabaseModule
-import com.repzone.orm.api.Orm
+import com.repzone.orm.api.Entity
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.GlobalContext.startKoin
 import org.koin.java.KoinJavaComponent.getKoin
@@ -37,12 +36,13 @@ class PlatformApplication: Application() {
         val db: AppDatabase = getKoin().get()
         //val sss = Entity.select<UsersRow>()
         val driver : SqlDriver = getKoin().get()
-        val users = OrmRegistryImpl.byTypeId("Users") ?:error("Users meta not found")
+/*        val users = OrmRegistryImpl.byTypeId("Users") ?:error("Users meta not found")
 
 
 
-        val rows = Orm.select(driver, users)
+        val rows = Orm.select(driver, users)*/
 
+        val userList = Entity.select<Users>(driver)
 
         db.userQueries.transaction {
             //db.userQueries.insertOrReplace(Users(1,"dsdada",null,null,null,null,null))

@@ -169,7 +169,7 @@ val generateOrmMeta = tasks.register<JavaExec>("generateOrmMeta") {
         .get().asFile.absolutePath
     val pkg = "com.repzone.database.orm.generated"
 
-    args("--sqldelightRoot=$sqRoot", "--out=$outDir", "--pkg=$pkg")
+    args("--sqldelightRoot=$sqRoot", "--out=$outDir", "--pkg=$pkg", "--sqPkg=com.repzone.database")
 }
 
 // commonMain derlemesi öncesi meta üretimi çalışsın

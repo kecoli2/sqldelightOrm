@@ -1,21 +1,19 @@
 package com.repzone.orm
 
-class EntityRegistry {
-    //region Field
-    //endregion
+object EntityRegistry {
+    private val metadataMap = mutableMapOf<String, EntityMetadata<*>>()
 
-    //region Properties
-    //endregion
+    internal fun <T> registerInternal(className: String, metadata: EntityMetadata<T>) {
+        metadataMap[className] = metadata
+    }
 
-    //region Constructor
-    //endregion
+    private inline fun <reified T> getMetadata(): EntityMetadata<T> {
+        val className = T::class.simpleName!!
+        return metadataMap[className] as? EntityMetadata<T>
+            ?: throw IllegalArgumentException("No metadata found for $className")
+    }
 
-    //region Public Method
-    //endregion
-
-    //region Protected Method
-    //endregion
-
-    //region Private Method
-    //endregion
+    fun initialize() {
+        //com.repzone.orm.database.Generated_EntityRegistration.registerAll()
+    }
 }

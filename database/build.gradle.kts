@@ -1,4 +1,3 @@
-import com.repzone.orm.gen.processor.DatabaseSchemaProcessorProvider
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
@@ -6,7 +5,7 @@ plugins {
     alias(libs.plugins.androidKotlinMultiplatformLibrary)
     alias(libs.plugins.androidLint)
     alias(libs.plugins.sqldelight)
-    id("com.google.devtools.ksp") version "2.0.20-1.0.25"
+    alias(libs.plugins.ksp)
 }
 
 kotlin {

@@ -5,11 +5,9 @@ plugins {
     alias(libs.plugins.androidKotlinMultiplatformLibrary)
     alias(libs.plugins.androidLint)
     alias(libs.plugins.sqldelight)
-    alias(libs.plugins.ksp)
 }
 
 kotlin {
-    jvm()
     // Target declarations - add or remove as needed below. These define
     // which platforms this KMP module supports.
     // See: https://kotlinlang.org/docs/multiplatform-discover-project.html#targets
@@ -115,23 +113,6 @@ kotlin {
     }
 }
 
-dependencies {
-    // BuildSrc processor - JAR file kullanın class değil
-    add("kspCommonMainMetadata", files("../buildSrc/build/libs/buildSrc.jar"))
-    add("kspJvm", files("../buildSrc/build/libs/buildSrc.jar"))
-    add("kspAndroid", files("../buildSrc/build/libs/buildSrc.jar"))
-
-    // iOS için de eklemek gerekebilir
-/*    add("kspIosX64", files("../buildSrc/build/libs/buildSrc.jar"))
-    add("kspIosArm64", files("../buildSrc/build/libs/buildSrc.jar"))
-    add("kspIosSimulatorArm64", files("../buildSrc/build/libs/buildSrc.jar"))*/
-}
-
-ksp {
-    arg("database.path", rootProject.file("database.db").absolutePath)
-    arg("database.packageName", "com.repzone.orm.database") // ORM için ayrı package
-}
-
 sqldelight {
     databases {
         create("AppDatabase") {
@@ -142,7 +123,3 @@ sqldelight {
         linkSqlite = true
     }
 }
-
-// Database path configuration
-project.ext.set("database.path", rootProject.file("database.db").absolutePath)
-project.ext.set("database.packageName", "com.repzone.orm.database")

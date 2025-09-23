@@ -17,9 +17,9 @@ import app.cash.sqldelight.db.SqlDriver
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
-import kotlinsqldelightsample.composeapp.generated.resources.Res
-import kotlinsqldelightsample.composeapp.generated.resources.compose_multiplatform
 import org.koin.compose.koinInject
+import sqldelightorm.composeapp.generated.resources.Res
+import sqldelightorm.composeapp.generated.resources.compose_multiplatform
 
 @Composable
 @Preview

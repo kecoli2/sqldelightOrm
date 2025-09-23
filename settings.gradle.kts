@@ -28,5 +28,6 @@ dependencyResolutionManagement {
     }
 }
 
+rootProject.name = "SqlDelightOrm"
 include(":composeApp")
 include(":database")

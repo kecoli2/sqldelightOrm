@@ -1,18 +1,16 @@
-import com.repzone.orm.gen.GenerateOrmRegistryFromSchema
-import com.repzone.orm.gen.PruneSqlDelightSchemas
-import org.gradle.kotlin.dsl.register
+import com.repzone.orm.gen.processor.DatabaseSchemaProcessorProvider
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidKotlinMultiplatformLibrary)
     alias(libs.plugins.androidLint)
     alias(libs.plugins.sqldelight)
+    id("com.google.devtools.ksp") version "2.0.20-1.0.25"
 }
 
 kotlin {
-
+    jvm()
     // Target declarations - add or remove as needed below. These define
     // which platforms this KMP module supports.
     // See: https://kotlinlang.org/docs/multiplatform-discover-project.html#targets
@@ -82,8 +80,8 @@ kotlin {
                 implementation(libs.kotlinx.coroutines.core)
                 implementation(libs.koin.core)
                 implementation(libs.kotlin.stdlib)
-                kotlin.srcDir("$buildDir/generated/source/ormregistry/commonMain")
                 // Add KMP dependencies here
+
             }
         }
 
@@ -116,76 +114,23 @@ kotlin {
             }
         }
     }
+}
 
-    // Şema kökü
-    val schemaDirProvider = layout.projectDirectory.dir("src/commonMain/sqldelight/schema")
+dependencies {
+    // BuildSrc processor - JAR file kullanın class değil
+    add("kspCommonMainMetadata", files("../buildSrc/build/libs/buildSrc.jar"))
+    add("kspJvm", files("../buildSrc/build/libs/buildSrc.jar"))
+    add("kspAndroid", files("../buildSrc/build/libs/buildSrc.jar"))
 
-    // En büyük n.db'yi bulan yardımcı
-    fun findLatestDbOrNull(): File? {
-        val root = schemaDirProvider.asFile
-        if (!root.exists()) return null
-        return root.walkTopDown()
-            .filter { it.isFile && it.extension.equals("db", true) && it.nameWithoutExtension.all(Char::isDigit) }
-            .maxByOrNull { it.nameWithoutExtension.toLong() }
-    }
+    // iOS için de eklemek gerekebilir
+/*    add("kspIosX64", files("../buildSrc/build/libs/buildSrc.jar"))
+    add("kspIosArm64", files("../buildSrc/build/libs/buildSrc.jar"))
+    add("kspIosSimulatorArm64", files("../buildSrc/build/libs/buildSrc.jar"))*/
+}
 
-// RegularFile Provider: varsa gerçek dosya, yoksa "placeholder"
-    val latestDbRegularFile: Provider<RegularFile> =
-        providers.provider { findLatestDbOrNull() ?: File(schemaDirProvider.asFile, ".placeholder-missing.db") }
-            .flatMap { f -> layout.file(providers.provider { f }) }
-
-// ——— TASK ———
-    val registryTask = tasks.register<GenerateOrmRegistryFromSchema>("generateOrmRegistryFromSchema") {
-        // 1) Her durumda bir değer ata (Gradle memnun olur)
-        schemaDb.set(latestDbRegularFile)
-
-        // 2) Dosya yoksa task'ı çalıştırma
-        onlyIf {
-            val exists = latestDbRegularFile.get().asFile.exists()
-            if (!exists) logger.lifecycle("[ORM] skip: no *.db found under ${schemaDirProvider.asFile}")
-            exists
-        }
-
-        // Diğer ayarlar
-        outputKotlinFile.set(
-            layout.buildDirectory.file(
-                "generated/source/ormregistry/commonMain/com/repzone/orm/generated/OrmRegistry_Generated.kt"
-            )
-        )
-
-        // (opsiyonel) tip ipuçları
-        typeHints.putAll(
-            mapOf(
-                "User.age" to "Int",
-                "User.isActive" to "Bool"
-            )
-        )
-
-        // (opsiyonel) tablo adı != sınıf adı ise
-        ctorNameHints.putAll(
-            mapOf(
-                "User" to "User" // gerek yoksa boş bırak
-            )
-        )
-
-        customConverters.putAll(
-            mapOf(
-                "User.birthDay" to "kotlinx.datetime.Instant.parse(%s)"
-            )
-        )
-
-        generatedPackage.set("com.repzone.orm.generated")
-        rowTypesPackage.set("com.repzone.db")
-    }
-
-// 4b) varsa SQLDelight interface task’larına da bağımlı yap (ad tabanlı, güvenli)
-    val interfaceTasks = tasks.matching { it.name.startsWith("generate") && it.name.endsWith("Interface") }
-// TaskCollection'ı direkt dependsOn'a verebilirsin (lazy)
-    registryTask.configure { dependsOn(interfaceTasks) }
-
-// 5) derleme zinciri
-    tasks.named("build").configure { dependsOn(registryTask) }
-    tasks.named("assemble").configure { dependsOn(registryTask) }
+ksp {
+    arg("database.path", rootProject.file("database.db").absolutePath)
+    arg("database.packageName", "com.repzone.orm.database") // ORM için ayrı package
 }
 
 sqldelight {
@@ -198,3 +143,7 @@ sqldelight {
         linkSqlite = true
     }
 }
+
+// Database path configuration
+project.ext.set("database.path", rootProject.file("database.db").absolutePath)
+project.ext.set("database.packageName", "com.repzone.orm.database")

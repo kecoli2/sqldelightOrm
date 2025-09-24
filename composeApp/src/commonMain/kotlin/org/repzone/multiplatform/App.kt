@@ -26,7 +26,7 @@ import sqldelightorm.composeapp.generated.resources.compose_multiplatform
 fun App() {
     MaterialTheme {
         var showContent by remember { mutableStateOf(false) }
-        val driver = koinInject<SqlDriver>()
+        //val driver = koinInject<SqlDriver>()
         Column(
             modifier = Modifier
                 .background(MaterialTheme.colorScheme.primaryContainer)
@@ -35,26 +35,20 @@ fun App() {
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Button(onClick = {
-                if(1==1){
-
-                }
-
-
-
-
 
                 showContent = !showContent
-
-
-                /*val lst = Users(1,"dsdsa",null, null)
-
-                UserQueries(driver).insertOrReplace(lst)*/
-
-
 
             }) {
                 Text("Click me!")
             }
+            Button(onClick = {
+
+                showContent = !showContent
+
+            }) {
+                Text("salih!")
+            }
+            Text("sdasdasda")
             AnimatedVisibility(showContent) {
                 val greeting = remember { Greeting().greet() }
                 Column(

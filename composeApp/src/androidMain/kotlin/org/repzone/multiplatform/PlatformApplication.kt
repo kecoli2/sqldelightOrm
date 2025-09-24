@@ -1,16 +1,15 @@
 package org.repzone.multiplatform
 
 import android.app.Application
-import android.location.Criteria
-import android.os.Build
+import android.widget.TableRow
 import app.cash.sqldelight.db.SqlDriver
 import com.repzone.database.AppDatabase
 import com.repzone.database.Users
 import com.repzone.di.DatabaseAndroidModule
 import com.repzone.di.DatabaseModule
 import com.repzone.orm.api.Entity
-import com.repzone.orm.api.EntityPagination
 import com.repzone.orm.dsl.*
+import com.repzone.orm.meta.TableMeta
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.GlobalContext.startKoin
 import org.koin.java.KoinJavaComponent.getKoin
@@ -54,13 +53,14 @@ class PlatformApplication: Application() {
             group { ("userName" eq "salih") and ("id" eq 2) } or ("userName".isNull()) or ("id" eq 1)
         }
 
+        var sss : TableMeta? = null
 
         val db: AppDatabase = getKoin().get()
         //val sss = Entity.select<UsersRow>()
         val driver : SqlDriver = getKoin().get()
 
 
-        val p = EntityPagination.page<Users>(
+        val p = Entity.page<Users>(
             driver = driver,
             criteria = and(
                 Expr.IsNull("deleted_at"),
@@ -75,6 +75,7 @@ class PlatformApplication: Application() {
 
         try {
             val userList11 = Entity.select<Users>(driver, criteria = c1)
+
             val userList12 = Entity.select<Users>(driver, criteria = c3)
 
             if(1==1){

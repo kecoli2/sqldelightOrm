@@ -1,0 +1,36 @@
+-- CollectionLogInformationEntity SQLDelight dosyası
+-- Orijinal tablo: CollectionLogInformation
+-- Oluşturma tarihi: 2025-09-24 12:18:20
+
+CREATE TABLE IF NOT EXISTS CollectionLogInformationEntity (
+    Id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    RestServiceTaskId INTEGER,
+    DocumentUniqueId TEXT,
+    CustomerId INTEGER,
+    CollectionDate INTEGER,
+    SumTotal REAL,
+    Note TEXT
+);
+
+selectAllCollectionLogInformationEntity:
+SELECT * FROM CollectionLogInformationEntity;
+
+selectByCollectionLogInformationEntityId:
+SELECT * FROM CollectionLogInformationEntity WHERE Id = :Id;
+
+insertCollectionLogInformationEntity:
+INSERT INTO CollectionLogInformationEntity (RestServiceTaskId, DocumentUniqueId, CustomerId, CollectionDate, SumTotal, Note)
+VALUES (:RestServiceTaskId, :DocumentUniqueId, :CustomerId, :CollectionDate, :SumTotal, :Note);
+
+insertOrReplaceCollectionLogInformationEntity:
+INSERT OR REPLACE INTO CollectionLogInformationEntity (RestServiceTaskId, DocumentUniqueId, CustomerId, CollectionDate, SumTotal, Note)
+VALUES (:RestServiceTaskId, :DocumentUniqueId, :CustomerId, :CollectionDate, :SumTotal, :Note);
+
+updateCollectionLogInformationEntity:
+UPDATE CollectionLogInformationEntity SET RestServiceTaskId = :RestServiceTaskId, DocumentUniqueId = :DocumentUniqueId, CustomerId = :CustomerId, CollectionDate = :CollectionDate, SumTotal = :SumTotal, Note = :Note WHERE Id = :Id;
+
+deleteCollectionLogInformationEntity:
+DELETE FROM CollectionLogInformationEntity WHERE Id = :Id;
+
+deleteAllCollectionLogInformationEntity:
+DELETE FROM CollectionLogInformationEntity;
